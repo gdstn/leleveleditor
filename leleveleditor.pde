@@ -8,7 +8,7 @@ boolean platform=false;
 boolean mp=false;
 boolean mr=false;
 int px=0;
-int py=0; 
+int py=0;
 void mousePressed(){
   mp=true;
   if(keyPressed&&key=='p'){
@@ -33,7 +33,17 @@ void mouseReleased(){
   }
   mr=true;
 }
-
+void keyPressed(){
+  if(key=='s'){
+    System.out.println();
+    system.out.print(k.id+d.id+g.id);
+    for(int x=0; x<ple.size(); x++){
+    System.out.print((ple.get(x)).id);
+    }
+    System.out.println();
+  }
+  }
+}
 void draw(){
   background(255);
   k.render();
@@ -82,6 +92,9 @@ abstract class entity{
     dx=mouseX-x;
     dy=mouseY-y;
     m=true;
+    if(keyPressed&&key=='r'){
+      rem=true;
+    }
   }
   void onrelease(){
     m=false;
@@ -104,6 +117,7 @@ class door extends entity{
     fill(#E2DDC7);
     rect(x, y, 22, 58);
     ellipse(x+15, y+58/2, 5, 5);
+    id="d"+i2s(x)+i2s(y)+"999";
   }
 }
 class guy extends entity{
@@ -122,6 +136,7 @@ class guy extends entity{
     line(x-3, y+20, x-5, y+35);
     line(x-3, y+20, x+5, y+30);
     line(x+5, y+30, x+5, y+31);
+    id="g"+i2s(x)+i2s(y)+"999";
   }
 }
 class keey extends entity{
@@ -136,6 +151,7 @@ class keey extends entity{
       rect(x+12, y-2, 2, 8);
       rect(x, y-2, 20, 4);
       ellipse(x, y, 12, 12);
+      id="k"+i2s(x)+i2s(y)+"999";
   }
 }
 class platform extends entity{
@@ -147,11 +163,13 @@ class platform extends entity{
     super.render();
     fill(#003D21);
     rect(x, y, w, 5);
+    id="p"+i2s(x)+i2s(y)+i2s(w);
   }
 }
 
 
 class enemy extends entity{
+  int theta=0; 
   enemy(int a, int b, int c){
     super(a, b, c);
     id="e"+i2s(a)+i2s(b)+i2s(c);
@@ -162,14 +180,16 @@ class enemy extends entity{
     line(x, y, x+w, y);
     stroke(0);
     fill(#A2B5AE);
-    ellipse(x+w, y, 40+random(4), 40+random(4));
-    line(x+w-10, y+12, x+w-5, y+10);
-    line(x+w, y+12, x+w-5, y+10);
-    line(x+w+5, y+10, x+w, y+12);
-    line(x+w+5, y+10, x+w+10, y+12);
+    ellipse(x+w*cos(radians(theta)), y+w*sin(radians(theta)), 40+random(4), 40+random(4));
+    line(x+w*cos(radians(theta))-10, y+w*sin(radians(theta))+12, x+w*cos(radians(theta))-5, y+w*sin(radians(theta))+10);
+    line(x+w*cos(radians(theta)), y+w*sin(radians(theta))+12, x+w*cos(radians(theta))-5, y+w*sin(radians(theta))+10);
+    line(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))+10, x+w*cos(radians(theta)), y+w*sin(radians(theta))+12);
+    line(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))+10, x+w*cos(radians(theta))+10, y+w*sin(radians(theta))+12);
     fill(0);
-    ellipse(x+w-5, y-5, random(4), random(4));
-    ellipse(x+w+5, y-5, random(4), random(4));
+    ellipse(x+w*cos(radians(theta))-5, y+w*sin(radians(theta))-5, random(4), random(4));
+    ellipse(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))-5, random(4), random(4));
+    theta++;
+    id="e"+i2s(x)+i2s(y)+i2s(w);
   }
 }
 
