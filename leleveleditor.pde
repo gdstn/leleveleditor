@@ -1,3 +1,5 @@
+String data="k409394999d438430999g388430999e081351141p257303081p191110103";
+String newdata="";
 keey k=new keey(400, 100);
 door d=new door(70, 60);
 guy g=new guy(250, 350);
@@ -9,6 +11,33 @@ boolean mp=false;
 boolean mr=false;
 int px=0;
 int py=0;
+void parsedata(String dat){
+  for(int x=0; x<dat.length(); x+=10){
+    if(dat.charAt(x)=='k'){
+      k.x=parseInt(dat.substring(x+1, x+4));
+      k.y=parseInt(dat.substring(x+4, x+7));
+    
+    }
+    else if(dat.charAt(x)=='g'){
+      g.x=parseInt(dat.substring(x+1, x+4));
+      g.y=parseInt(dat.substring(x+4, x+7));
+      
+    }
+    else if(dat.charAt(x)=='d'){
+      d.x=parseInt(dat.substring(x+1, x+4));
+      d.y=parseInt(dat.substring(x+4, x+7));
+      
+    }
+    else if(dat.charAt(x)=='e'){
+      ple.add(new enemy(parseInt(dat.substring(x+1, x+4)), parseInt(dat.substring(x+4, x+7)), parseInt(dat.substring(x+7, x+10))));
+      
+    }
+    else if(dat.charAt(x)=='p'){
+      ple.add(new platform(parseInt(dat.substring(x+1, x+4)), parseInt(dat.substring(x+4, x+7)), parseInt(dat.substring(x+7, x+10))));
+      
+    }
+  }
+}
 void mousePressed(){
   mp=true;
   if(keyPressed&&key=='p'){
@@ -35,23 +64,29 @@ void mouseReleased(){
 }
 void keyPressed(){
   if(key=='s'){
-    System.out.println();
-    system.out.print(k.id+d.id+g.id);
+    newdata=newdata+k.id+d.id+g.id);
     for(int x=0; x<ple.size(); x++){
-    System.out.print((ple.get(x)).id);
+    newdata=newdata+(ple.get(x)).id);
+    saveStrings("level"+(int)(Math.random()*999), o);
     }
-    System.out.println();
   }
   }
-}
+
 void draw(){
   background(255);
+  fill(0);
+  text("Press and hold:\np to add a platform\ne to add an enemy\nr to remove something\nc to change an enemy's radius\ns to save\n\nsave level to be loaded as input.txt", 100, 100, 100, 300);
   k.render();
   d.render();
   g.render();
   if(platform){
     fill(0);
     rect(px, py, mouseX-px, 5);
+  }
+  if(enemy){
+    stroke(#ff0000);
+    line(px, py, mouseX, py);
+    stroke(0);
   }
   for(int x=0; x<ple.size(); x++){
     (ple.get(x)).render();
@@ -65,6 +100,8 @@ void draw(){
 void setup(){
   size(500, 500);
   frameRate(30);
+  data=loadStrings("input.txt");
+  parsedata(data);
 }
 String i2s(int x){
   if(x<100)
@@ -104,7 +141,7 @@ abstract class entity{
    void render(){
      if(m){
      x=mouseX-dx;
-     y=mouseY-dy;
+     y=mouseY-dy; 
      }
      if(mr){
        onrelease();
@@ -117,12 +154,13 @@ class door extends entity{
     id="d"+i2s(a)+i2s(b)+"999";
   }
   void render(){super.render();
+  if(mp&&mouseinbox(x, x+22, y, y+58)){
+      onclick();
+    }
     fill(#E2DDC7);
     rect(x, y, 22, 58);
     ellipse(x+15, y+58/2, 5, 5);
-    if(mp&&mouseinbox(x, x+22, y, y+58)){
-       onclick();
-     }
+    id="d"+i2s(x)+i2s(y)+"999";
   }
 }
 class guy extends entity{
@@ -132,6 +170,9 @@ class guy extends entity{
   }
   void render(){
     super.render();
+    if(mp&&mouseinbox(x-9, x+9, y-9, y+58)){
+       onclick();
+    }
     fill(255);
     ellipse(x, y+9, 18, 18);
     stroke(0);
@@ -141,9 +182,6 @@ class guy extends entity{
     line(x-3, y+20, x-5, y+35);
     line(x-3, y+20, x+5, y+30);
     line(x+5, y+30, x+5, y+31);
-    if(mp&&mouseinbox(x-9, x+9, y-9, y+58)){
-       onclick();
-     }
     id="g"+i2s(x)+i2s(y)+"999";
   }
 }
@@ -154,14 +192,14 @@ class keey extends entity{
   }
   void render(){
     super.render();
+    if(mp&&mouseinbox(x-6, x+20, y-6, y+6)){
+     onclick();
+    }
       fill(#E2DDC7); 
       rect(x+16, y-2, 2, 8);
       rect(x+12, y-2, 2, 8);
       rect(x, y-2, 20, 4);
       ellipse(x, y, 12, 12);
-      if(mp&&mouseinbox(x-6, x+20, y-6, y+6)){
-       onclick();
-     }
       id="k"+i2s(x)+i2s(y)+"999";
   }
 }
@@ -172,6 +210,9 @@ class platform extends entity{
   }
   void render(){
     super.render();
+    if(mp&&mouseinbox(x, x+w, y, y+5)){
+     onclick();
+   }
     fill(#003D21);
     rect(x, y, w, 5);
     id="p"+i2s(x)+i2s(y)+i2s(w);
@@ -181,18 +222,30 @@ class platform extends entity{
 
 class enemy extends entity{
   int theta=0; 
+  boolean changerad=false;
   enemy(int a, int b, int c){
     super(a, b, c);
     id="e"+i2s(a)+i2s(b)+i2s(c);
   }
   void render(){
     super.render();
-    if(mp&&mouseinbox(x+w-20, x+w-20, y-20, y+20)){
-       onclick();
-     }
+    if(mousePressed&&mouseinbox(x, x+w, y, y+5)){
+      onclick();
+      if(keyPressed&&key=='c'){
+        changerad=true;
+        m=false;
+    }
+    }
+    
     stroke(#ff0000);
     line(x, y, x+w, y);
     stroke(0);
+    if(changerad){
+      w=mouseX-x;
+      if(mr){
+      changerad=false;
+      }
+    }
     fill(#A2B5AE);
     ellipse(x+w*cos(radians(theta)), y+w*sin(radians(theta)), 40+random(4), 40+random(4));
     line(x+w*cos(radians(theta))-10, y+w*sin(radians(theta))+12, x+w*cos(radians(theta))-5, y+w*sin(radians(theta))+10);
@@ -207,6 +260,6 @@ class enemy extends entity{
   }
 }
 
-boolean mouseinbox(int xi, int xa, int yi, int ya){
+boolean mouseinbox(float xi, float xa, float yi, float ya){
   return (mouseX>xi&&mouseX<xa&&mouseY>yi&&mouseY<ya);
 }
