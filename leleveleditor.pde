@@ -3,29 +3,61 @@ door d=new door(70, 60);
 guy g=new guy(250, 350);
 ArrayList<entity> ple=new ArrayList<entity>();
 boolean remove=false;
-boolean enmy=false;
-boolean platform=false;
+boolean enemy=false;
+boolean platform=false; 
 boolean mp=false;
 boolean mr=false;
+int px=0;
+int py=0;
 void mousePressed(){
   mp=true;
-  if(keyPressed){
-    
+  if(keyPressed&&key=='p'){
+    px=mouseX;
+    py=mouseY;
+    platform=true;
+  }
+  if(keyPressed&&key=='e'){
+    px=mouseX;
+    py=mouseY;
+    enemy=true;
   }
 }
 void mouseReleased(){
+  if(platform){
+    platform=false;
+    ple.add(new platform(px, py, mouseX-px));
+  }
+  if(enemy){
+    enemy=false;
+    ple.add(new enemy(px, py, mouseX-px));
+  }
   mr=true;
 }
-
+void keyPressed(){
+  if(key=='s'){
+    System.out.println();
+    system.out.print(k.id+d.id+g.id);
+    for(int x=0; x<ple.size(); x++){
+    System.out.print((ple.get(x)).id);
+    }
+    System.out.println();
+  }
+  }
+}
 void draw(){
   background(255);
   k.render();
   d.render();
   g.render();
+  if(platform){
+    fill(0);
+    rect(px, py, mouseX-px, 5);
+  }
   for(int x=0; x<ple.size(); x++){
-    ple.get(x).render();
-    if(ple.get(x).rem)
+    (ple.get(x)).render();
+    if(ple.get(x).rem){
     ple.remove(x);
+    }
   }
   mp=false;
   mr=false;
@@ -43,14 +75,14 @@ String i2s(int x){
   return Integer.toString(x);
 }
 abstract class entity{
-  String id=new String();
+  String id=new String(); 
   int x;
-  int y;
+  int y; 
   int w;
   boolean rem=false;
-  boolean m=false;
+  boolean m=false; 
   int dx=0;
-  int dy=0;
+  int dy=0; 
   entity(int a, int b, int c){
     x=a;
     y=b;
@@ -60,6 +92,9 @@ abstract class entity{
     dx=mouseX-x;
     dy=mouseY-y;
     m=true;
+    if(keyPressed&&key=='r'){
+      rem=true;
+    }
   }
   void onrelease(){
     m=false;
@@ -109,6 +144,7 @@ class guy extends entity{
     if(mp&&mouseinbox(x-9, x+9, y-9, y+58)){
        onclick();
      }
+    id="g"+i2s(x)+i2s(y)+"999";
   }
 }
 class keey extends entity{
@@ -118,7 +154,7 @@ class keey extends entity{
   }
   void render(){
     super.render();
-      fill(#E2DDC7);
+      fill(#E2DDC7); 
       rect(x+16, y-2, 2, 8);
       rect(x+12, y-2, 2, 8);
       rect(x, y-2, 20, 4);
@@ -126,6 +162,7 @@ class keey extends entity{
       if(mp&&mouseinbox(x-6, x+20, y-6, y+6)){
        onclick();
      }
+      id="k"+i2s(x)+i2s(y)+"999";
   }
 }
 class platform extends entity{
@@ -137,10 +174,13 @@ class platform extends entity{
     super.render();
     fill(#003D21);
     rect(x, y, w, 5);
+    id="p"+i2s(x)+i2s(y)+i2s(w);
   }
 }
 
+
 class enemy extends entity{
+  int theta=0; 
   enemy(int a, int b, int c){
     super(a, b, c);
     id="e"+i2s(a)+i2s(b)+i2s(c);
@@ -154,18 +194,19 @@ class enemy extends entity{
     line(x, y, x+w, y);
     stroke(0);
     fill(#A2B5AE);
-    ellipse(x+w, y, 40+random(4), 40+random(4));
-    line(x+w-10, y+12, x+w-5, y+10);
-    line(x+w, y+12, x+w-5, y+10);
-    line(x+w+5, y+10, x+w, y+12);
-    line(x+w+5, y+10, x+w+10, y+12);
+    ellipse(x+w*cos(radians(theta)), y+w*sin(radians(theta)), 40+random(4), 40+random(4));
+    line(x+w*cos(radians(theta))-10, y+w*sin(radians(theta))+12, x+w*cos(radians(theta))-5, y+w*sin(radians(theta))+10);
+    line(x+w*cos(radians(theta)), y+w*sin(radians(theta))+12, x+w*cos(radians(theta))-5, y+w*sin(radians(theta))+10);
+    line(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))+10, x+w*cos(radians(theta)), y+w*sin(radians(theta))+12);
+    line(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))+10, x+w*cos(radians(theta))+10, y+w*sin(radians(theta))+12);
     fill(0);
-    ellipse(x+w-5, y-5, random(4), random(4));
-    ellipse(x+w+5, y-5, random(4), random(4));
+    ellipse(x+w*cos(radians(theta))-5, y+w*sin(radians(theta))-5, random(4), random(4));
+    ellipse(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))-5, random(4), random(4));
+    theta++;
+    id="e"+i2s(x)+i2s(y)+i2s(w);
   }
 }
 
 boolean mouseinbox(int xi, int xa, int yi, int ya){
   return (mouseX>xi&&mouseX<xa&&mouseY>yi&&mouseY<ya);
 }
-
