@@ -6,7 +6,7 @@ guy g=new guy(250, 350);
 ArrayList<entity> ple=new ArrayList<entity>();
 boolean remove=false;
 boolean enemy=false;
-boolean platform=false; 
+boolean platform=false;
 boolean mp=false;
 boolean mr=false;
 int px=0;
@@ -16,25 +16,29 @@ void parsedata(String dat){
     if(dat.charAt(x)=='k'){
       k.x=parseInt(dat.substring(x+1, x+4));
       k.y=parseInt(dat.substring(x+4, x+7));
-    
+
     }
     else if(dat.charAt(x)=='g'){
       g.x=parseInt(dat.substring(x+1, x+4));
       g.y=parseInt(dat.substring(x+4, x+7));
-      
+
     }
     else if(dat.charAt(x)=='d'){
       d.x=parseInt(dat.substring(x+1, x+4));
       d.y=parseInt(dat.substring(x+4, x+7));
-      
+
     }
     else if(dat.charAt(x)=='e'){
-      ple.add(new enemy(parseInt(dat.substring(x+1, x+4)), parseInt(dat.substring(x+4, x+7)), parseInt(dat.substring(x+7, x+10))));
-      
+      ple.add(new enemy(parseInt(dat.substring(x+1, x+4)),
+parseInt(dat.substring(x+4, x+7)), parseInt(dat.substring(x+7,
+x+10))));
+
     }
     else if(dat.charAt(x)=='p'){
-      ple.add(new platform(parseInt(dat.substring(x+1, x+4)), parseInt(dat.substring(x+4, x+7)), parseInt(dat.substring(x+7, x+10))));
-      
+      ple.add(new platform(parseInt(dat.substring(x+1, x+4)),
+parseInt(dat.substring(x+4, x+7)), parseInt(dat.substring(x+7,
+x+10))));
+
     }
   }
 }
@@ -50,6 +54,14 @@ void mousePressed(){
     py=mouseY;
     enemy=true;
   }
+ if(mouseinbox(100, 200, 400, 500)){
+    newdata=newdata+k.id+d.id+g.id;
+    for(int x=0; x<ple.size(); x++){
+    newdata=newdata+(ple.get(x)).id;
+    }
+    String[] sss={newdata};
+    saveStrings("level"+(int)(Math.random()*999)+".txt", sss);
+}
 }
 void mouseReleased(){
   if(platform){
@@ -62,19 +74,15 @@ void mouseReleased(){
   }
   mr=true;
 }
-void keyPressed(){
-  if(key=='s'&&mousePressed){
-    newdata=newdata+k.id+d.id+g.id;
-    for(int x=0; x<ple.size(); x++)
-    newdata=newdata+(ple.get(x)).id;
-    String[] sss={newdata};
-    saveStrings("level"+(int)(Math.random()*999)+".txt", sss);
-  }
-  }
+
+
 void draw(){
   background(255);
   fill(0);
-  text("Press and hold:\np to add a platform\ne to add an enemy\nr to remove something\nc to change an enemy's radius\ns and click to save\n\nsave level to be loaded as input.txt", 100, 100, 100, 300);
+  text("Press and hold:\np to add a platform\ne to add an enemy\nr to
+remove something\nc to change an enemy's radius\n\nsave level to be
+loaded as input.txt", 100, 100, 100, 300);
+  text("Click to save", 100, 400, 100, 100);
   k.render();
   d.render();
   g.render();
@@ -110,15 +118,15 @@ String i2s(int x){
   else
   return Integer.toString(x);
 }
-abstract class entity{
-  String id=new String(); 
+class entity{
+  String id=new String();
   int x;
-  int y; 
+  int y;
   int w;
   boolean rem=false;
-  boolean m=false; 
+  boolean m=false;
   int dx=0;
-  int dy=0; 
+  int dy=0;
   entity(int a, int b, int c){
     x=a;
     y=b;
@@ -140,7 +148,7 @@ abstract class entity{
    void render(){
      if(m){
      x=mouseX-dx;
-     y=mouseY-dy; 
+     y=mouseY-dy;
      }
      if(mr){
        onrelease();
@@ -197,7 +205,7 @@ class keey extends entity{
      onclick();
      mp=false;
     }
-      fill(#E2DDC7); 
+      fill(#E2DDC7);
       rect(x+16, y-2, 2, 8);
       rect(x+12, y-2, 2, 8);
       rect(x, y-2, 20, 4);
@@ -212,7 +220,7 @@ class platform extends entity{
   }
   void render(){
     super.render();
-    if(mp&&mouseinbox(x, x+w, y, y+5)){
+    if(mp&&mouseinbox((float)x, (float)(x+w), (float)y, (float)y+10.0)){
      onclick();
      mp=false;
    }
@@ -224,7 +232,7 @@ class platform extends entity{
 
 
 class enemy extends entity{
-  int theta=0; 
+  int theta=0;
   boolean changerad=false;
   enemy(int a, int b, int c){
     super(a, b, c);
@@ -232,7 +240,10 @@ class enemy extends entity{
   }
   void render(){
     super.render();
-    if(mp&&mouseinbox(x, x+w, y, y+5)){
+    if(mp&&(mouseinbox(x, x+w, y,
+y+5)||mouseinbox(x+w*cos(radians(theta))-20,
+x+w*cos(radians(theta))+20,
+y+w*sin(radians(theta))-20,y+w*sin(radians(theta))+20))){
       onclick();
       mp=false;
       if(keyPressed&&key=='c'){
@@ -240,7 +251,7 @@ class enemy extends entity{
         m=false;
     }
     }
-    
+
     stroke(#ff0000);
     line(x, y, x+w, y);
     stroke(0);
@@ -251,20 +262,27 @@ class enemy extends entity{
       }
     }
     fill(#A2B5AE);
-    ellipse(x+w*cos(radians(theta)), y+w*sin(radians(theta)), 40+random(4), 40+random(4));
-    line(x+w*cos(radians(theta))-10, y+w*sin(radians(theta))+12, x+w*cos(radians(theta))-5, y+w*sin(radians(theta))+10);
-    line(x+w*cos(radians(theta)), y+w*sin(radians(theta))+12, x+w*cos(radians(theta))-5, y+w*sin(radians(theta))+10);
-    line(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))+10, x+w*cos(radians(theta)), y+w*sin(radians(theta))+12);
-    line(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))+10, x+w*cos(radians(theta))+10, y+w*sin(radians(theta))+12);
+    ellipse(x+w*cos(radians(theta)), y+w*sin(radians(theta)),
+40+random(4), 40+random(4));
+    line(x+w*cos(radians(theta))-10, y+w*sin(radians(theta))+12,
+x+w*cos(radians(theta))-5, y+w*sin(radians(theta))+10);
+    line(x+w*cos(radians(theta)), y+w*sin(radians(theta))+12,
+x+w*cos(radians(theta))-5, y+w*sin(radians(theta))+10);
+    line(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))+10,
+x+w*cos(radians(theta)), y+w*sin(radians(theta))+12);
+    line(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))+10,
+x+w*cos(radians(theta))+10, y+w*sin(radians(theta))+12);
     fill(0);
-    ellipse(x+w*cos(radians(theta))-5, y+w*sin(radians(theta))-5, random(4), random(4));
-    ellipse(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))-5, random(4), random(4));
+    ellipse(x+w*cos(radians(theta))-5, y+w*sin(radians(theta))-5,
+random(4), random(4));
+    ellipse(x+w*cos(radians(theta))+5, y+w*sin(radians(theta))-5,
+random(4), random(4));
     theta++;
     id="e"+i2s(x)+i2s(y)+i2s(w);
   }
 }
 
 boolean mouseinbox(float xi, float xa, float yi, float ya){
-  return (mouseX>xi&&mouseX<xa&&mouseY>yi&&mouseY<ya);
+  return (mouseX>=xi&&mouseX<=xa&&mouseY>=yi&&mouseY<=ya);
 }
 
