@@ -65,14 +65,12 @@ void mouseReleased(){
 void keyPressed(){
   if(key=='s'&&mousePressed){
     newdata=newdata+k.id+d.id+g.id;
-    for(int x=0; x<ple.size(); x++){
+    for(int x=0; x<ple.size(); x++)
     newdata=newdata+(ple.get(x)).id;
     String[] sss={newdata};
     saveStrings("level"+(int)(Math.random()*999)+".txt", sss);
-    }
   }
   }
-
 void draw(){
   background(255);
   fill(0);
